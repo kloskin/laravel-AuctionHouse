@@ -24,7 +24,9 @@
                             </h5>
                             <p class="card-text flex-grow-1">{{ Str::limit($auction->description, 80) }}</p>
                             <div>
-                                <span class="fw-bold">{{ number_format($auction->starting_price, 2, ',', ' ') }} zł</span>
+                                <span class="fw-bold">
+                                    {{ number_format($auction->current_price ?? $auction->starting_price, 2, ',', ' ') }} zł
+                                </span>
                             </div>
                         </div>
                         <div class="card-footer text-muted small">

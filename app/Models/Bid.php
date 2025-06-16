@@ -5,6 +5,7 @@ namespace App\Models;
 use MongoDB\Laravel\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Auction;
 
 class Bid extends Model
 {
@@ -22,7 +23,7 @@ class Bid extends Model
         return $this->belongsTo(User::class, 'user_id', '_id');
     }
 
-    public static function place(int $auctionId, int $userId, float $amount): self
+    public static function place(string $auctionId, string $userId, float $amount): self
     {
         // 1. Zapisz nową ofertę w MongoDB
         $bid = self::create([
@@ -35,9 +36,10 @@ class Bid extends Model
         $auction = Auction::findOrFail($auctionId);
         $auction->update(['current_price' => $amount]);
 
-        // 3. Dodaj do Redis zset aukcji
+        // 3. Dodaj do Redis Sorted Set
         $redisKey = "auction:{$auctionId}:bids";
-        Redis::zadd($redisKey, [$bid->id => $amount]);
+        // Używamy $bid->_id, bo to MongoDB-owe _id
+        Redis::zadd($redisKey, [$bid->_id => $amount]);
 
         return $bid;
     }

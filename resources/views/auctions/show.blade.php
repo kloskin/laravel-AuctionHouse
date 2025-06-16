@@ -44,7 +44,7 @@
             @endif
 
             <!-- Formularz licytacji -->
-            <form action="{{ route('auctions.bids.store', $auction->id) }}" method="POST" class="mt-4">
+            <form action="{{ route('auctions.bids.store', $auction) }}" method="POST" class="mt-4">
                 @csrf
                 <div class="mb-3">
                     <label for="amount" class="form-label">Twoja oferta (zł)</label>
@@ -70,12 +70,23 @@
             @if($auction->bids->isEmpty())
                 <p class="text-muted">Brak ofert.</p>
             @else
+                @php
+                    $highestBid = $auction->bids->sortByDesc('amount')->first();
+                @endphp
                 <ul class="list-group">
                     @foreach($auction->bids as $bid)
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>{{ $bid->user->name }}</strong><br>
-                                <small class="text-muted">{{ $bid->created_at->format('d.m.Y H:i') }}</small>
+                        @php
+                            $isUserHighest = auth()->check() && $bid->id === $highestBid->id && $bid->user_id === auth()->id();
+                        @endphp
+                        <li class="list-group-item d-flex justify-content-between align-items-center {{ $isUserHighest ? 'bg-success text-white' : '' }}">
+                            <div class="d-flex align-items-center">
+                                @if($isUserHighest)
+                                    <i class="bi bi-star-fill me-2"></i>
+                                @endif
+                                <div>
+                                    <strong>{{ $bid->user->name }}</strong><br>
+                                    <small class="{{ $isUserHighest ? 'text-white' : 'text-muted' }}">{{ $bid->created_at->format('d.m.Y H:i') }}</small>
+                                </div>
                             </div>
                             <span class="fw-bold">{{ number_format($bid->amount, 2, ',', ' ') }} zł</span>
                         </li>

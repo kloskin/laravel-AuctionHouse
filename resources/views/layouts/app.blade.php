@@ -6,6 +6,7 @@
     <title>@yield('title', 'Aukcje')</title>
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
     <!-- Navbar -->
@@ -16,14 +17,33 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    {{-- Dodaj linki, np. logowanie/rejestracja --}}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">Logowanie</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('register') }}">Rejestracja</a>
-                    </li>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    @guest
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('login') }}">Logowanie</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('register') }}">Rejestracja</a>
+                        </li>
+                    @else
+                        {{-- Dodaj aukcję --}}
+                        <li class="nav-item me-lg-3">
+                            <a class="btn btn-sm btn-primary" href="{{ route('auctions.create') }}">Dodaj aukcję</a>
+                        </li>
+                        {{-- Wyświetl email użytkownika --}}
+                        <li class="nav-item">
+                            <span class="navbar-text">
+                                {{ Auth::user()->name }}
+                            </span>
+                        </li>
+                        {{-- Wylogowanie --}}
+                        <li class="nav-item ms-3">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="btn btn-link nav-link">Wyloguj</button>
+                            </form>
+                        </li>
+                    @endguest
                 </ul>
             </div>
         </div>
