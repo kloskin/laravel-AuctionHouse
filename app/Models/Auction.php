@@ -30,6 +30,9 @@ class Auction extends Model
     // rzutowanie pola images na array
     protected $casts = [
         'images' => 'array',
+        'ends_at'     => 'datetime',
+        'created_at'  => 'datetime',
+        'updated_at'  => 'datetime',
     ];
 
     /**

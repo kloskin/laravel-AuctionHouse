@@ -6,6 +6,7 @@ use App\Models\Auction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class AuctionController extends Controller
 {
@@ -15,7 +16,10 @@ class AuctionController extends Controller
     public function index()
     {
         // Sortujemy po ends_at (pole w modelu), 12 na stronę
-        $auctions = Auction::orderBy('ends_at')->paginate(12);
+        $auctions = Auction::where('ends_at', '>', Carbon::now())
+                           ->orderBy('ends_at', 'asc')
+                           ->paginate(12);
+
         return view('auctions.index', compact('auctions'));
     }
 
