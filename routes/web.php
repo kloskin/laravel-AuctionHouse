@@ -5,6 +5,7 @@ use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', [AuctionController::class, 'index'])->name('home');
 // Rejestracja
@@ -21,6 +22,16 @@ Route::post('logout', [LoginController::class, 'logout'])
 
 Route::resource('auctions', AuctionController::class);
 
-Route::post('/auctions/{auction}/bids', [BidController::class, 'store'])
-    ->name('auctions.bids.store')
-    ->middleware('auth');
+Route::middleware('auth')->group(function () {
+     // Obsługa aukcji
+     Route::post('/auctions/{auction}/bids', [BidController::class, 'store'])
+    ->name('auctions.bids.store');
+
+    // Wyświetlenie formularza edycji profilu
+    Route::get('/profile', [UserController::class, 'editProfile'])
+         ->name('profile.edit');
+
+    // Obsługa zapisu zmian w profilu
+    Route::put('/profile', [UserController::class, 'updateProfile'])
+         ->name('profile.update');
+});

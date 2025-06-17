@@ -30,11 +30,9 @@
                         <li class="nav-item me-lg-3">
                             <a class="btn btn-sm btn-primary" href="{{ route('auctions.create') }}">Dodaj aukcję</a>
                         </li>
-                        {{-- Wyświetl email użytkownika --}}
+                        {{-- Profil użytkownika --}}
                         <li class="nav-item">
-                            <span class="navbar-text">
-                                {{ Auth::user()->name }}
-                            </span>
+                            <a class="btn btn-link nav-link" href="{{ route('profile.edit') }}"> {{ Auth::user()->name }}</a>
                         </li>
                         {{-- Wylogowanie --}}
                         <li class="nav-item ms-3">

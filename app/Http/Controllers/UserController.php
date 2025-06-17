@@ -113,4 +113,41 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User deleted']);
     }
+    
+    /**
+     * Pokaż formularz edycji profilu zalogowanego użytkownika.
+     */
+    public function editProfile()
+    {
+        $user = auth()->user();
+        return view('profile.edit', compact('user'));
+    }
+    /**
+     * Zapisz zmiany profilu zalogowanego użytkownika.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        $validated = $request->validate([
+            'name'                  => ['required', 'string', 'max:255'],
+            'email'                 => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->_id)],
+            'password'              => ['nullable', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        // Nie nadpisuj hasła, jeśli pole puste
+        if (empty($validated['password'])) {
+            unset($validated['password']);
+        }
+
+        $user->fill($validated);
+        $user->save();
+
+        // Opcjonalnie: wyczyść cache listy użytkowników
+        Redis::del('users:all');
+
+        return redirect()
+            ->route('profile.edit')
+            ->with('success', 'Profil został zaktualizowany.');
+    }
 }
