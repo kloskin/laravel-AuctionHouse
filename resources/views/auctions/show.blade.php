@@ -70,7 +70,7 @@
                 <!-- Aktualna najwyższa oferta -->
                 @if(isset($auction->current_price))
                     <h5>Aktualna najwyższa oferta:</h5>
-                    <p class="fs-4 text-danger fw-bold">{{ number_format($auction->current_price, 2, ',', ' ') }} zł</p>
+                    <p class="fs-4 text-danger fw-bold" id="current-price">{{ number_format($auction->current_price, 2, ',', ' ') }} zł</p>
                 @endif
 
                 <!-- Formularz licytacji widoczny tylko dla zalogowanych -->
@@ -83,6 +83,7 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Złóż ofertę</button>
                     </form>
+                    
                 @else
                     <p class="text-muted mt-4">Aby złożyć ofertę, <a href="{{ route('login') }}">zaloguj się</a>.</p>
                 @endauth
@@ -150,5 +151,15 @@
         update();
         interval = setInterval(update, 1000);
     })();
+</script>
+<script>
+Echo.channel(`auction.{{ $auction->id }}`)
+    .listen('PriceUpdated', e => {
+        const priceEl = document.getElementById('current-price');
+        if (priceEl) {
+            priceEl.innerText = e.newPrice + ' zł';
+        }
+    });
+    
 </script>
 @endpush

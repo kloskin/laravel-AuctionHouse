@@ -70,7 +70,7 @@
             © {{ date('Y') }} System Aukcyjny
         </div>
     </footer>
-
+<script>console.log('Inline body script');</script>
     @stack('scripts')
 </body>
 </html>
