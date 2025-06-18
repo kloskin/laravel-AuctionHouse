@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container my-4">
-    <h1 class="mb-4">Aktualne aukcje</h1>
+    <h1 class="mb-4">Aktualnie trwające aukcje</h1>
 
     @if($auctions->isEmpty())
         <p class="text-muted">Brak dostępnych aukcji w tej chwili.</p>

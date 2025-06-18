@@ -30,15 +30,27 @@
                         <li class="nav-item me-lg-3">
                             <a class="btn btn-sm btn-primary" href="{{ route('auctions.create') }}">Dodaj aukcję</a>
                         </li>
+                        {{-- Lista wszystkich aukcji --}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('home') }}">Aukcje</a>
+                        </li>
+                        {{-- Moje aukcje --}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('auctions.my-auctions') }}">Moje aukcje</a>
+                        </li>
+                        {{-- Moje oferty czyli aukcje w których dałem ofertę --}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('auctions.my-bids') }}">Moje oferty</a>
+                        </li>
                         {{-- Profil użytkownika --}}
                         <li class="nav-item">
                             <a class="btn btn-link nav-link" href="{{ route('profile.edit') }}"> {{ Auth::user()->name }}</a>
                         </li>
                         {{-- Wylogowanie --}}
-                        <li class="nav-item ms-3">
+                        <li class="nav-item ">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="btn btn-link nav-link">Wyloguj</button>
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Wyloguj</button>
                             </form>
                         </li>
                     @endguest

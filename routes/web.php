@@ -27,6 +27,12 @@ Route::middleware('auth')->group(function () {
      Route::post('/auctions/{auction}/bids', [BidController::class, 'store'])
     ->name('auctions.bids.store');
 
+    // trasa do strony „Moje oferty” i „Moje aukcje” 
+    Route::get('/my-bids', [AuctionController::class, 'myBids'])
+         ->name('auctions.my-bids');
+     Route::get('/my-auctions', [AuctionController::class, 'myAuctions'])
+          ->name('auctions.my-auctions');
+
     // Wyświetlenie formularza edycji profilu
     Route::get('/profile', [UserController::class, 'editProfile'])
          ->name('profile.edit');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auction;
+use App\Models\Bid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -133,5 +134,29 @@ class AuctionController extends Controller
 
         return redirect()->route('auctions.index')
                          ->with('success', 'Aukcja usunięta!');
+    }
+    public function myAuctions(){
+        $auctions = Auction::where('owner_id', auth()->id())
+                        ->orderBy('ends_at','asc')
+                        ->get();
+        return view('auctions.my-auctions', compact('auctions'));
+    }
+
+    public function myBids()
+    {
+        $userId = Auth::id();
+
+        // 1) Możesz pobrać wszystkie auction_id z modelu Bid:
+        $auctionIds = Bid::where('user_id', $userId)
+                         ->pluck('auction_id')
+                         ->unique()
+                         ->toArray();
+
+        // 2) Załaduj aukcje o tych ID:
+        $auctions = Auction::whereIn('_id', $auctionIds)
+                           ->orderBy('ends_at', 'asc')
+                           ->get();
+
+        return view('auctions.my-bids', compact('auctions'));
     }
 }
