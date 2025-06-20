@@ -40,6 +40,9 @@ class BidController extends Controller
         //     'remaining' => $remaining,
         // ]);
 
+        // 5. Broadcast zdarzenia
+        broadcast(new \App\Events\PriceUpdated($bid->auction_id, $bid->amount));
+
         $now    = Carbon::now('Europe/Warsaw');
         $endsAt = Carbon::parse($auction->ends_at)->setTimezone('Europe/Warsaw');
 
@@ -48,7 +51,6 @@ class BidController extends Controller
         if ($remaining > 0 && $remaining <= 60) {
             $auction->ends_at = $endsAt->addSeconds(30);
             $auction->save();
-            broadcast(new \App\Events\PriceUpdated($bid->auction_id, $bid->amount));
         }
 
         return back()->with('success', "Złożono ofertę: {$bid->amount} zł");
