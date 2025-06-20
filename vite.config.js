@@ -2,17 +2,16 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
-  server: {
-    host: '0.0.0.0',    // **ważne** — bindowanie na wszystkie interfejsy
-    port: 5173,
-    hmr: {
-      host: 'localhost', // aby HMR wsadzał się do właściwego adresu
-    },
-  },
   plugins: [
     laravel({
       input: ['resources/css/app.css','resources/js/app.js'],
       refresh: true,
+      env: {
+        REVERB_APP_KEY: process.env.REVERB_APP_KEY,
+        REVERB_HOST: process.env.REVERB_HOST,
+        REVERB_PORT: process.env.REVERB_PORT,
+        REVERB_SCHEME: process.env.REVERB_SCHEME
+      }
     }),
   ],
 });
