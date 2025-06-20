@@ -132,34 +132,35 @@
 @endsection
 
 @push('scripts')
-<script>
+<script type="module">
     (function() {
+        // Odliczanie do końca aukcji
         const el = document.getElementById('countdown');
-        if (!el) return;
-        const endsAt = new Date(el.dataset.endsAt);
-        let interval;
-        function update() {
-            const now = new Date();
-            let diff = Math.max(0, Math.floor((endsAt - now) / 1000));
-            const h = String(Math.floor(diff / 3600)).padStart(2, '0');
-            diff %= 3600;
-            const m = String(Math.floor(diff / 60)).padStart(2, '0');
-            const s = String(diff % 60).padStart(2, '0');
-            el.textContent = `${h}:${m}:${s}`;
-            if (h === '00' && m === '00' && s === '00') clearInterval(interval);
+        if (el) {
+            const endsAt = new Date(el.dataset.endsAt);
+            let interval;
+            function update() {
+                const now = new Date();
+                let diff = Math.max(0, Math.floor((endsAt - now) / 1000));
+                const h = String(Math.floor(diff / 3600)).padStart(2, '0');
+                diff %= 3600;
+                const m = String(Math.floor(diff / 60)).padStart(2, '0');
+                const s = String(diff % 60).padStart(2, '0');
+                el.textContent = `${h}:${m}:${s}`;
+                if (h === '00' && m === '00' && s === '00') clearInterval(interval);
+            }
+            update();
+            interval = setInterval(update, 1000);
         }
-        update();
-        interval = setInterval(update, 1000);
+
+        // Dynamiczna aktualizacja ceny przez WebSocket (Laravel Echo)
+        Echo.channel('auction.{{ $auction->id }}')
+            .listen('PriceUpdated', e => {
+                const priceEl = document.getElementById('current-price');
+                if (priceEl) {
+                    priceEl.innerText = e.newPrice + ' zł';
+                }
+            });
     })();
-</script>
-<script>
-Echo.channel(`auction.{{ $auction->id }}`)
-    .listen('PriceUpdated', e => {
-        const priceEl = document.getElementById('current-price');
-        if (priceEl) {
-            priceEl.innerText = e.newPrice + ' zł';
-        }
-    });
-    
 </script>
 @endpush
