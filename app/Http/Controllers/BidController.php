@@ -43,6 +43,9 @@ class BidController extends Controller
         // 5. Broadcast zdarzenia
         broadcast(new \App\Events\PriceUpdated($bid->auction_id, $bid->amount));
 
+        // 2) A zaraz potem puszczaj BidPlaced, żeby zaktualizować historię
+        broadcast(new \App\Events\BidPlaced($bid));
+        
         $now    = Carbon::now('Europe/Warsaw');
         $endsAt = Carbon::parse($auction->ends_at)->setTimezone('Europe/Warsaw');
 

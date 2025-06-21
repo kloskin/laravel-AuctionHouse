@@ -106,12 +106,12 @@
             @if($auction->bids->isEmpty())
                 <p class="text-muted">Brak ofert.</p>
             @else
-                <ul class="list-group">
+                <ul class="list-group" id="bid-history">
                     @foreach($auction->bids as $bid)
                         @php
                             $isUserHighest = auth()->check() && $highestBid && $bid->id === $highestBid->id && $bid->user_id === auth()->id();
                         @endphp
-                        <li class="list-group-item d-flex justify-content-between align-items-center {{ $isUserHighest ? 'bg-success text-white' : '' }}">
+                        <li class="list-group-item d-flex justify-content-between align-items-center {{ $isUserHighest ? 'bg-success text-white' : '' }}" data-bid-id="{{ $bid->id }}">
                             <div class="d-flex align-items-center">
                                 @if($isUserHighest)
                                     <i class="bi bi-star-fill me-2"></i>
@@ -156,11 +156,44 @@
         // Dynamiczna aktualizacja ceny przez WebSocket (Laravel Echo)
         Echo.channel('auction.{{ $auction->id }}')
             .listen('PriceUpdated', e => {
-                const priceEl = document.getElementById('current-price');
-                if (priceEl) {
-                    priceEl.innerText = e.newPrice + ' zł';
-                }
+            document.getElementById('current-price').textContent = e.newPrice + ' zł';
+            })
+            .listen('BidPlaced', e => {
+            const history = document.getElementById('bid-history');
+            if (!history) return;
+            
+            // Sprawdź, czy oferta już istnieje w historii
+            if (history.querySelector(`li[data-bid-id="${e.id}"]`)) {
+                return;
+            }
+            // Utwórz nowy element listy z odpowiednimi klasami Bootstrap
+            const li = document.createElement('li');
+            li.setAttribute('data-bid-id', e.id);
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+            // Zbuduj lewą część (użytkownik + data)
+            const leftDiv = document.createElement('div');
+            leftDiv.className = 'd-flex align-items-center';
+
+            const userDiv = document.createElement('div');
+            userDiv.innerHTML = `<strong>${e.bidder}</strong><br>
+                <small class="text-muted">${e.createdAt}</small>`;
+
+            leftDiv.appendChild(userDiv);
+
+            // Zbuduj prawą część (kwota)
+            const amountSpan = document.createElement('span');
+            amountSpan.className = 'fw-bold';
+            amountSpan.textContent = `${e.amount} zł`;
+
+            // Dodaj do elementu li
+            li.appendChild(leftDiv);
+            li.appendChild(amountSpan);
+
+            // Dodaj na początek historii
+            history.prepend(li);
             });
+
     })();
 </script>
 @endpush
